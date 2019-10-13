@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/community.css">
+
+    <script src="js/jquery-3.4.1.min.js" type="application/javascript"></script>
+    <script src="js/bootstrap.min.js" type="application/javascript"></script>
+    <script>
+        $(function () {
+            $("ul.pagination li.disabled a").click(function () {
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="center" th:fragment="page">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li th:classappend="${!page.isHasPreviousPage()}?'disabled'">
+                <a th:href="@{/(pageNo=${page.startRow})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li th:classappend="${!page.isHasPreviousPage()}?'disabled'">
+                <a th:href="@{/(pageNo=${page.prePage})}" aria-label="Previous">
+                    <span aria-hidden="true">&lsaquo;</span>
+                </a>
+            </li>
+            <li th:each="nav:${page.navigatepageNums}" th:class="${page.pageNum==nav? 'active':'' }">
+                <a th:href="@{/(pageNo=${nav})}">[[${nav}]]<span
+                        class="sr-only">(current)</span></a>
+            </li>
+            <li th:classappend="${!page.isHasNextPage()}?'disabled'">
+                <a th:href="@{/(pageNo=${page.nextPage})}" aria-label="Next">
+                    <span aria-hidden="true">&rsaquo;</span>
+                </a>
+            </li>
+            <li th:classappend="${!page.isHasNextPage()}?'disabled'">
+                <a th:href="@{/(pageNo=${page.nextPage})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>

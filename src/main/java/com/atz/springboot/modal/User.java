@@ -265,5 +265,7 @@ package com.atz.springboot.modal;
         public void setAvatarUrl(String avatarUrl) {
             this.avatarUrl = avatarUrl == null ? null : avatarUrl.trim();
         }
+
+
     }
 
