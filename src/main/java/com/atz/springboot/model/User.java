@@ -1,4 +1,4 @@
-package com.atz.springboot.modal;
+package com.atz.springboot.model;
 
 
     public class User {
@@ -9,7 +9,7 @@ package com.atz.springboot.modal;
          *
          * @mbg.generated Thu Sep 05 06:46:42 CST 2019
          */
-        private Long id;
+        private int id;
 
         /**
          *
@@ -82,7 +82,7 @@ package com.atz.springboot.modal;
          *
          * @mbg.generated Thu Sep 05 06:46:42 CST 2019
          */
-        public Long getId() {
+        public int getId() {
             return id;
         }
 
@@ -94,7 +94,7 @@ package com.atz.springboot.modal;
          *
          * @mbg.generated Thu Sep 05 06:46:42 CST 2019
          */
-        public void setId(Long id) {
+        public void setId(int id) {
             this.id = id;
         }
 

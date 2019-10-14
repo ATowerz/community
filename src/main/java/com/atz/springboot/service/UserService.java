@@ -1,7 +1,7 @@
 package com.atz.springboot.service;
 
 import com.atz.springboot.mapper.UserMapper;
-import com.atz.springboot.modal.User;
+import com.atz.springboot.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,24 +13,17 @@ public class UserService {
     private UserMapper userMapper;
 
     public void createOrUpdate(User user) {
-//
-//        List<User> users = userMapper.findByID(user.getId());
-//        if (users.size() == 0) {
-//            // 插入
-//            user.setGmtCreate(System.currentTimeMillis());
-//            user.setGmtModified(user.getGmtCreate());
-//            userMapper.insert(user);
-//        } else {
-//            //更新
-//            User dbUser = users.get(0);
-//            User updateUser = new User();
-//            updateUser.setGmtModified(System.currentTimeMillis());
-//            updateUser.setAvatarUrl(user.getAvatarUrl());
-//            updateUser.setName(user.getName());
-//            updateUser.setToken(user.getToken());
-//            UserExample example = new UserExample();
-//            example.createCriteria()
-//                    .andIdEqualTo(dbUser.getId());
-//            userMapper.updateByExampleSelective(updateUser, example);
+        User dbUser = userMapper.findByAccountId(user.getAccountId());
+        if (dbUser == null) {
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+            userMapper.insert(user);
+        } else {
+            dbUser.setGmtModified(user.getGmtCreate());
+            dbUser.setAvatarUrl(user.getAvatarUrl());
+            dbUser.setName(user.getName());
+            dbUser.setToken(user.getToken());
+            userMapper.updateUser(dbUser);
         }
     }
+}

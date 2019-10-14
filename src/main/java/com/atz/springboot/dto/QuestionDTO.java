@@ -1,6 +1,6 @@
 package com.atz.springboot.dto;
 
-import com.atz.springboot.modal.User;
+import com.atz.springboot.model.User;
 import lombok.Data;
 
 @Data

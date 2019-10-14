@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>[[${question.title}]]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="google-site-verification" content="QGf2OqDw91EjWtNE07HoLJi0x0G2rIYylk6jn6JEoEQ" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/community.css">
+    <script src="/js/jquery-3.4.1.min.js" type="application/javascript"></script>
+    <script src="/js/bootstrap.min.js" type="application/javascript"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-5294687859556356",
+            enable_page_level_ads: true
+        });
+    </script>
+</head>
+<style>
+</style>
+<body>
+<style>
+    .comment{margin-top: 15px;}
+</style>
+<!--引入导航条-->
+<div th:insert="~{navigation :: nav}"></div>
+<!--内容部分-->
+<div class="header"></div>
+<div class="container main">
+    <div class="row" style="margin-right:5px;margin-left: 5px;">
+        <!---左边部分-->
+        <div class="col-lg-9 col-md-12 col-sm-12 lefwrapper ">
+            <!--标题-->
+            <quote style="margin-top: 10px;"><span class="glyphicon glyphicon-tasks"></span>
+                <span style="font-size:25px;font-weight: 700" th:text="${question.title}"></span>
+            </quote>
+            <div style="margin-top: 5px;"></div>
+            <!--发布时间,作者,阅读-->
+            <span style="color:#999;font-size: 12px">活动 | 作者: <span th:text="${question.user.name}"></span> | 发布于: <span
+                    th:text="${#dates.format(question.gmtCreate, 'yyyy年MM月dd日 hh:mm:ss')}"></span> | 预计阅读时间：1分钟 | 阅读数： <span
+                    th:text="${question.viewCount}"></span></span>
+            <span th:text="${question.creator}"></span>,
+            <span th:text="${session.user.id}"></span>
+
+            <hr>
+            <!--内容-->
+            <div id="question-view" class="col-lg-12 col-md-12 col-sm-12">
+                <!-- Server-side output Markdown text -->
+                <span th:text="${question.description}">### Hello world!</span>
+            </div>
+            <hr class="col-lg-12 col-md-12 col-sm-12">
+            <!--编辑-->
+            <span class="col-lg-12 col-md-12 col-sm-12" style="font-size: 12px;">
+                <a th:if="${session.user!=null && question.creator==session.user.id}" style="cursor: pointer"
+                   th:href="@{/publish/}+${question.id}">
+                    <span class="iconfont icon-bianji-01"></span>&nbsp;编辑
+                </a>
+                    &nbsp;   &nbsp;
+                <a style="cursor: pointer">
+                <span class="iconfont icon-fenxiang"></span>&nbsp;分享
+                </a>
+                  &nbsp;&nbsp;
+                <a style="cursor: pointer" class="collectBtn" th:id="${question.id}">
+<!--                <span class="glyphicon glyphicon-star"></span>&nbsp;<span th:text="${collect_users!=null&&collect_users.size()>0 ? collect_users.size():'0'}"></span>收藏-->
+<!--                </a>-->
+                   &nbsp;   &nbsp;
+                <a style="cursor: pointer" th:data-questionid="${question.id}" onclick="likeQuestion(this)">
+                <span th:id="questionlike_btn" class="iconfont icon-dianzan"></span>点赞<span th:id="likeQuestionCount">[[${question.likeCount}]]</span>
+                </a>
+
+
+
+
+            </span>
+            <hr class="col-lg-12 col-md-12 col-sm-12">
+            <!--标签内容-->
+            <small style="color:#666;">标签</small>&nbsp;&nbsp;&nbsp;
+            <span style="color:#999;font-size: 12px;cursor: pointer" th:each="tag,tagStat:${question.tag.split(',')}">
+                <span class="label label-info">
+                 <span class="glyphicon glyphicon-tags"></span>&nbsp;&nbsp;&nbsp;[[${tag}]]</span>
+            </span>
+            <hr>
+
+            <!--发表输入框-->
+            <hr>
+            <input type="hidden" id="parentId" th:value="${question.id}">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12" id="comment_area">
+                    <div th:if="${session.user!=null}">
+                        <img class="img-rounded" width="40" style="padding:5px;"
+                             th:src="${session.user.getAvatarUrl()}">
+                        <span th:text="${session.user.getName()}"></span>
+                    </div>
+                    <br>
+                    <div th:if="${session.user==null}"><img th:width="30" style="margin-bottom: 18px;"
+                                                            th:src="@{/images/nm.png}">
+                        [匿名用户]
+                    </div>
+                    <textarea id="commentContent" class="form-control" rows="3" th:placeholder="请输入你的评论内容"></textarea>
+                    <a onclick="addComment()" href="javascript:;"
+                       style="float: right;margin-top: 20px;margin-bottom:20px;cursor: pointer"
+                       class="btn btn-sm btn-success">评论</a>
+                </div>
+            </div>
+        </div>
+        <!--右边部分-->
+        <div class="col-lg-3 col-md-12 col-sm-12 rightwrapper" style="padding-top: 15px;padding-bottom: 20px">
+            <!--发起人信息-->
+            <small style="color:#333;"><span class="fui-user"></span>发起人:</small>
+            <hr>
+            <small>
+                <img class="img-rounded" width="40px;" th:src="${question.user.avatarUrl}">
+            </small>
+            <hr>
+<!--
+            <hr th:height="1px">
+            <!--相关问题--->
+            <small style="color:#333;"><span class="fui-list-columned"></span>&nbsp;相关问题</small>
+            <hr>
+<!--
+            <hr>
+            <!--收藏--->
+<!--
+            <div id="custom-toc-container" style="font-size: 11px;"></div>
+        </div>
+    </div>
+
+</div>
+<!--页尾-->
+<!--<img title="回到顶部" style="width: 32px;cursor: pointer;display: none; height: 32px;" class="footer" id="gotoTop" src="http://image.wenzhihuai.com/images/move-up.png" alt="">-->
+<!--<div th:insert="~{footer :: footer}"></div>-->
+<script src="webjars/jquery/3.1.1/jquery.min.js" th:src="@{/webjars/jquery/3.1.1/jquery.min.js}"></script>
+<script th:src="@{/editormd.js}"></script>
+<script th:src="@{/lib/marked.min.js}"></script>
+<script th:src="@{/lib/prettify.min.js}"></script>
+<script th:src="@{/layer/layer.js}"></script>
+<script th:src="@{/js/sweetalert.min.js}"></script>
+<script src="webjars/bootstrap/3.3.5/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.5/js/bootstrap.min.js}"></script>
+<script type="text/javascript">
+    //收藏问题
+    $(".collectBtn").click(function () {
+        var id=$(this).attr("id");
+        $.get("/doCollect",{"time":new Date(),"id":id},function (data) {
+            if(data.code==1000){
+                swal("问题收藏成功!", "操作成功！!", "success",
+                    {
+                        buttons: false,
+                        timer: 1000,
+                    }).then((value) => {
+                    window.location.reload();
+            });
+            }else {
+                swal(data.message, data.message,"info",  {
+                    buttons: false,
+                    timer: 1000,
+                });
+            }
+        })
+        return false;
+    })
+    //点赞问题
+    function likeQuestion(e) {
+        var id = e.getAttribute("data-questionid");
+        var url = "/likeQuestion";
+        var args = {"id": id, "time": new Date()};
+        $.get(url, args, function (data) {
+            if (data.code == 1000) {
+                swal("点赞成功!", "老哥,谢谢你的赞!", "success",
+                    {
+                        buttons: false,
+                        timer: 1000,
+                    });
+
+                $("#questionlike_btn").css({
+                    color: '#f40',
+                });
+                $("#likeQuestionCount").html(data.extend.likequestioncount);
+            } else {
+                swal(data.message,
+                    {
+                        buttons: false,
+                        timer: 1000,
+                    })
+            }
+        })
+        return false;
+    }
+
+    //点赞评论
+    function likeComment(e) {
+        var id = e.getAttribute("data-commentid");
+        var url = "/likeComment";
+        var args = {"id": id, "time": new Date()};
+        $.get(url, args, function (data) {
+            if (data.code == 1000) {
+                swal("点赞成功", "谢谢你的支持~", "success",
+                    {
+                        buttons: false,
+                        timer: 1000,
+                    })
+                $("#likecount" + id).text(data.extend.likecount);
+                $("#commentlike_btn" + id).css({
+                    color: '#f40',
+                })
+            } else {
+                swal(data.message,
+                    {
+                        buttons: false,
+                        timer: 1000,
+                    })
+            }
+        })
+        return false;
+    }
+
+    //展开二级评论
+    function toggleComments(e) {
+        var id = e.getAttribute("data-commentid");
+        if ($("#two_comment_" + id).attr("status") == "close") {
+            //后台获取二级数据
+            var url = "/comment/" + id;
+            $.get(url, function (data) {
+                //构建二级评论列表
+                BuildComments(data.extend.comment2s, id);
+                if (data.code == 1000) {
+                    $("#two_comment_" + id).slideDown("fast");
+                    $("#two_comment_" + id).attr("status", "open");
+                }
+            })
+        } else {
+            $("#two_comment_" + id).slideUp("fast");
+            $("#two_comment_" + id).attr("status", "close");
+        }
+
+    }
+
+    //构建列表
+    function BuildComments(comments, id) {
+        var wrapper = $("#comment2_wrapper_" + id);
+        wrapper.empty();
+        $.each(comments, function (index, item) {
+            var comment = $('' +
+                '<div class="media two_comment" style="margin-top: 5px;">\n' +
+                '  <div class="media-left">\n' +
+                '    <a href="#">\n' +
+                '      <img width="40"  class="media-object img-rounded" src="' + item.user.avatarUrl + '" alt="...">\n' +
+                '    </a>\n' +
+                '  </div>\n' +
+                '  <div class="media-body">\n' +
+                '    <h4 class="media-heading" style="font-size: 11px;font-weight: normal">' + item.user.name + '</h4>\n' +
+                '   <strong style="font-size: 12px;"> ' + item.content + '</strong>\n' +
+                '  <small style="float: right;font-size: 11px;">'+item.showTime+'</small></div>\n' +
+                '</div><hr style="color: #303030">\n');
+            comment.appendTo(wrapper);
+        })
+
+    }
+
+    //发表一级评论信息
+    function addComment() {
+        var parentId = $("#parentId").val();
+        var content = $("#commentContent").val();
+        commentAdd(parentId, content, 1);
+    }
+
+    //二级评论发表
+    function addcomment2(e) {
+        var parentId = e.getAttribute("data-commentid");
+        var content = $("#two_content_" + parentId).val();
+        commentAdd(parentId, content, 2);
+        $("#two_content_" + parentId).val("");
+
+    }
+
+    //公共方法
+    function commentAdd(parentId, content, type) {
+        var url = "/comment";
+        var args = {
+            "parentId": parentId.trim(),
+            "content": content,
+            "time": new Date(),
+            "type": type,
+            contentType: "application/json;charset=UTF-8"
+        }
+        if (!content || content.trim() == "") {
+            swal("评论内容不能为空", "请填写评论内容", "warning")
+            return false;
+        }
+        if (content.length > 50) {
+            swal("评论内容不能超过30个字", "写少点吧~~", "warning")
+        }
+    //     $.post(url, args, function (data) {
+    //         if (data.code != "1000") {
+    //             swal(data.message, data.message, "warning")
+    //         } else {
+    //             //alert("评论成功");
+    //             //$("#comment_area").hide();
+    //             $("#commentContent").val("");
+    //             swal("评论成功~", "评论成功~", "success",
+    //                 {
+    //                     buttons: false,
+    //                     timer: 1000,
+    //                 })
+    //                 .then((value) => {
+    //                 window.location.reload();
+    //         })
+    //         }
+    //     });
+    //     return false;
+    // }
+
+    $(function () {
+        editormd.markdownToHTML("question-view", {
+            path: "/lib/*",  // Autoload modules mode, codemirror, marked... dependents libs path
+            htmlDecode: "style,script,iframe",
+            emoji: true,
+            taskList: true,
+            htmlDecode: true,
+            htmlDecode: "dark,script,iframe",
+            //flowChart: true,
+            tocm: true,
+            tex: true,
+            tocContainer: "#custom-toc-container", // 自定义 ToC 容器层
+
+        });
+    });
+</script>
+</body>
+</html>
+<script>
+    function gotoTop(minHeight) {
+        // 定义点击返回顶部图标后向上滚动的动画
+        $("#gotoTop").click(
+            function () {
+                $('html,body').animate({scrollTop: '0px'}, 'slow');
+            })
+
+        // 获取页面的最小高度，无传入值则默认为600像素
+        minHeight ? minHeight = minHeight : minHeight = 600;
+
+        // 为窗口的scroll事件绑定处理函数
+        $(window).scroll(function () {
+
+            // 获取窗口的滚动条的垂直滚动距离
+            var s = $(window).scrollTop();
+
+            // 当窗口的滚动条的垂直距离大于页面的最小高度时，让返回顶部图标渐现，否则渐隐
+            if (s > minHeight) {
+                $("#gotoTop").fadeIn(500);
+            } else {
+                $("#gotoTop").fadeOut(500);
+            }
+            ;
+        });
+    };
+    gotoTop();
+</script>

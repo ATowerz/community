@@ -3,8 +3,9 @@ package com.atz.springboot.controller;
 import com.atz.springboot.dto.AccessTokenDTO;
 import com.atz.springboot.dto.GithubUser;
 import com.atz.springboot.mapper.UserMapper;
-import com.atz.springboot.modal.User;
+import com.atz.springboot.model.User;
 import com.atz.springboot.provider.GithubProvider;
+import com.atz.springboot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -30,7 +31,7 @@ public class AuthorizeController {
     private String redirectUri;
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
     @GetMapping("/callback")
         public String callback(@RequestParam(name = "code") String code,
                                @RequestParam(name = "state") String state,
@@ -54,11 +55,8 @@ public class AuthorizeController {
                 user.setAccountId(String.valueOf(githubUser.getId()));
                 user.setToken(token);
                 user.setName(githubUser.getName());
-                user.setGmtCreate(System.currentTimeMillis());
-                user.setGmtModified(user.getGmtCreate());
                 user.setAvatarUrl(githubUser.getAvatarUrl());
-                userMapper.insert(user);
-
+                userService.createOrUpdate(user);
                 Cookie cookie = new Cookie("token", token);
                 cookie.setMaxAge(60 * 60 * 24 * 30 * 6);
                 response.addCookie(cookie);
